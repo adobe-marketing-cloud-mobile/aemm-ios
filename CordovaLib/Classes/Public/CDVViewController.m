@@ -313,6 +313,13 @@
 
         [CDVTimer stop:@"TotalPluginStartup"];
     }
+	
+	// /////////////////
+	
+	[CDVUserAgentUtil acquireLock:^(NSInteger lockToken) {
+		_userAgentLockToken = lockToken;
+		[CDVUserAgentUtil setUserAgent:self.userAgent lockToken:lockToken];
+	}];
 }
 
 - (NSArray*)parseInterfaceOrientations:(NSArray*)orientations

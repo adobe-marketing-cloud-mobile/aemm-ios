@@ -31,6 +31,19 @@ var events = require('cordova-common').events;
 var projectPath = path.join(__dirname, '..', '..');
 var projectName = null;
 
+// These are regular expressions to detect if the user is changing any of the built-in xcodebuildArgs
+var buildFlagMatchers = {
+    'xcconfig' : /^\-xcconfig\s*(.*)$/,
+    'project' : /^\-project\s*(.*)/,
+    'archs' : /^(ARCHS=.*)/,
+    'target' : /^\-target\s*(.*)/,
+    'configuration' : /^\-configuration\s*(.*)/,
+    'sdk' : /^\-sdk\s*(.*)/,
+    'valid_archs' : /^(VALID_ARCHS=.*)/,
+    'configuration_build_dir' : /^(CONFIGURATION_BUILD_DIR=.*)/,
+    'shared_precomps_dir' : /^(SHARED_PRECOMPS_DIR=.*)/
+}
+
 module.exports.run = function (buildOpts) {
 
     buildOpts = buildOpts || {};
@@ -84,7 +97,7 @@ module.exports.run = function (buildOpts) {
         events.emit('log','\tConfiguration : ' + configuration);
         events.emit('log','\tPlatform      : ' + (buildOpts.device ? 'device' : 'emulator'));
 
-        var xcodebuildArgs = getXcodeArgs(projectName, projectPath, configuration, buildOpts.device);
+        var xcodebuildArgs = getXcodeArgs(projectName, projectPath, configuration, buildOpts.device, buildOpts.buildFlag);
         return spawn('xcodebuild', xcodebuildArgs, projectPath);
     }).then(function () {
         if (!buildOpts.device || buildOpts.noSign) {
@@ -133,42 +146,88 @@ module.exports.findXCodeProjectIn = findXCodeProjectIn;
 
 /**
  * Returns array of arguments for xcodebuild
- * @param  {String}  projectName   Name of xcode project
- * @param  {String}  projectPath   Path to project file. Will be used to set CWD for xcodebuild
- * @param  {String}  configuration Configuration name: debug|release
- * @param  {Boolean} isDevice      Flag that specify target for package (device/emulator)
- * @return {Array}                 Array of arguments that could be passed directly to spawn method
+ * @param  {String}       projectName     Name of xcode project
+ * @param  {String}       projectPath     Path to project file. Will be used to set CWD for xcodebuild
+ * @param  {String}       configuration   Configuration name: debug|release
+ * @param  {Boolean}      isDevice        Flag that specify target for package (device/emulator)
+ * @param  {String/Array} buildFlags      Additional build flags for xcodebuild
+ * @return {Array}                        Array of arguments that could be passed directly to spawn method
  */
-function getXcodeArgs(projectName, projectPath, configuration, isDevice) {
+function getXcodeArgs(projectName, projectPath, configuration, isDevice, buildFlags) {
     var xcodebuildArgs;
+    var options;
+    var buildActions = [ 'build' ];
+    var settings;
+    var customArgs = {};
+    customArgs.otherFlags = [];
+
+    if (buildFlags) {
+        if (typeof buildFlags === 'string' || buildFlags instanceof String) {
+            parseBuildFlag(buildFlags, customArgs);
+        } else { // buildFlags is an Array of strings
+            buildFlags.forEach( function(flag) {
+                parseBuildFlag(flag, customArgs);
+            });
+        }
+    }
+
     if (isDevice) {
-        xcodebuildArgs = [
-            '-xcconfig', path.join(__dirname, '..', 'build-' + configuration.toLowerCase() + '.xcconfig'),
-            '-project', projectName + '.xcodeproj',
-            'ARCHS=armv7 arm64',
-            '-target', projectName,
-            '-configuration', configuration,
-            '-sdk', 'iphoneos',
-            'build',
-            'VALID_ARCHS=armv7 arm64',
-            'CONFIGURATION_BUILD_DIR=' + path.join(projectPath, 'build', 'device'),
-            'SHARED_PRECOMPS_DIR=' + path.join(projectPath, 'build', 'sharedpch')
+        options = [
+            '-xcconfig', customArgs.xcconfig || path.join(__dirname, '..', 'build-' + configuration.toLowerCase() + '.xcconfig'),
+            '-project',  customArgs.project || projectName + '.xcodeproj',
+            customArgs.archs || 'ARCHS=armv7 arm64',
+            '-target', customArgs.target || projectName,
+            '-configuration', customArgs.configuration || configuration,
+            '-sdk', customArgs.sdk || 'iphoneos'
+        ];
+        settings = [
+            customArgs.valid_archs || 'VALID_ARCHS=armv7 arm64',
+            customArgs.configuration_build_dir || 'CONFIGURATION_BUILD_DIR=' + path.join(projectPath, 'build', 'device'),
+            customArgs.shared_precomps_dir || 'SHARED_PRECOMPS_DIR=' + path.join(projectPath, 'build', 'sharedpch')
         ];
     } else { // emulator
-        xcodebuildArgs = [
-            '-xcconfig', path.join(__dirname, '..', 'build-' + configuration.toLowerCase() + '.xcconfig'),
-            '-project', projectName + '.xcodeproj',
-            'ARCHS=x86_64 i386',
-            '-target', projectName ,
-            '-configuration', configuration,
-            '-sdk', 'iphonesimulator',
-            'build',
-            'VALID_ARCHS=x86_64 i386',
-            'CONFIGURATION_BUILD_DIR=' + path.join(projectPath, 'build', 'emulator'),
-            'SHARED_PRECOMPS_DIR=' + path.join(projectPath, 'build', 'sharedpch')
+        options = [
+            '-xcconfig', customArgs.xcconfig || path.join(__dirname, '..', 'build-' + configuration.toLowerCase() + '.xcconfig'),
+            '-project', customArgs.project || projectName + '.xcodeproj',
+            customArgs.archs || 'ARCHS=x86_64 i386',
+            '-target', customArgs.target || projectName,
+            '-configuration', customArgs.configuration || configuration,
+            '-sdk', customArgs.sdk || 'iphonesimulator'
+        ];
+        settings = [
+            customArgs.valid_archs || 'VALID_ARCHS=x86_64 i386',
+            customArgs.configuration_build_dir || 'CONFIGURATION_BUILD_DIR=' + path.join(projectPath, 'build', 'emulator'),
+            customArgs.shared_precomps_dir || 'SHARED_PRECOMPS_DIR=' + path.join(projectPath, 'build', 'sharedpch')
         ];
     }
+    xcodebuildArgs = options.concat(buildActions).concat(settings).concat(customArgs.otherFlags);
     return xcodebuildArgs;
+}
+
+function parseBuildFlag(buildFlag, args) {
+    var matched;
+    for (var key in buildFlagMatchers) {
+        var found = buildFlag.match(buildFlagMatchers[key]);
+        if (found) {
+            matched = true;
+            // found[0] is the whole match, found[1] is the first match in parentheses.
+            args[key] = found[1];
+            events.emit('warn','Overriding xcodebuildArg: ', buildFlag);
+        }
+    };
+
+    if (!matched) {
+        // If the flag starts with a '-' then it is an xcodebuild built-in option or a
+        // user-defined setting. The regex makes sure that we don't split a user-defined
+        // setting that is wrapped in quotes. 
+        if (buildFlag[0] === '-' && !buildFlag.match(/^.*=(\".*\")|(\'.*\')$/)) {
+            args.otherFlags = args.otherFlags.concat(buildFlag.split(" "));
+            events.emit('warn','Adding xcodebuildArg: ', buildFlag.split(" "));
+        } else {
+            args.otherFlags.push(buildFlag);
+            events.emit('warn','Adding xcodebuildArg: ', buildFlag);
+        }
+    }
 }
 
 // help/usage function
