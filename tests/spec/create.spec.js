@@ -60,13 +60,6 @@ describe('create', function() {
         createAndBuild(projectname, projectid);
     });
 
-    it('create project with ascii name, and spaces', function() {
-        var projectname = 'test create';
-        var projectid = 'com.test.app2';
-
-        createAndBuild(projectname, projectid);
-    });
-
     it('create project with unicode name, no spaces', function() {
         var projectname = '応応応応用用用用';
         var projectid = 'com.test.app3';
@@ -74,23 +67,9 @@ describe('create', function() {
         createAndBuild(projectname, projectid);
     });
 
-    it('create project with unicode name, and spaces', function() {
-        var projectname = '応応応応 用用用用';
-        var projectid = 'com.test.app4';
-
-        createAndBuild(projectname, projectid);
-    });
-
     it('create project with ascii+unicode name, no spaces', function() {
         var projectname = '応応応応hello用用用用';
         var projectid = 'com.test.app5';
-
-        createAndBuild(projectname, projectid);
-    });
-
-    it('create project with ascii+unicode name, and spaces', function() {
-        var projectname = '応応応応 hello 用用用用';
-        var projectid = 'com.test.app6';
 
         createAndBuild(projectname, projectid);
     });

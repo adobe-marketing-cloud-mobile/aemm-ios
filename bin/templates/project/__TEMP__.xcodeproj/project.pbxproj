@@ -72,12 +72,12 @@
 		890B50951C505D9F00F0E3FF /* NSDictionary+CordovaPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSDictionary+CordovaPreferences.h"; path = "CordovaLib/Classes/Public/NSDictionary+CordovaPreferences.h"; sourceTree = "<group>"; };
 		890B50971C505D9F00F0E3FF /* NSMutableArray+QueueAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSMutableArray+QueueAdditions.h"; path = "CordovaLib/Classes/Public/NSMutableArray+QueueAdditions.h"; sourceTree = "<group>"; };
 		890B50BE1C505E9900F0E3FF /* CordovaLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CordovaLib.xcodeproj; path = CordovaLib/CordovaLib.xcodeproj; sourceTree = "<group>"; };
-		94DF25DF1C0789E200AA4B62 /* __PROJECT_NAME__.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = __PROJECT_NAME__.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		94DF25E21C0789E200AA4B62 /* __PROJECT_NAME__.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = __PROJECT_NAME__.h; path = __PROJECT_NAME__/__PROJECT_NAME__.h; sourceTree = SOURCE_ROOT; };
+		94DF25DF1C0789E200AA4B62 /* __PROJECT_NAME__.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "__PROJECT_NAME__.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		94DF25E21C0789E200AA4B62 /* __PROJECT_NAME__.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "__PROJECT_NAME__.h"; path = "__PROJECT_NAME__/__PROJECT_NAME__.h"; sourceTree = SOURCE_ROOT; };
 		94DF25E41C0789E200AA4B62 /* __PROJECT_NAME__-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "__PROJECT_NAME__-Info.plist"; path = "__PROJECT_NAME__/__PROJECT_NAME__-Info.plist"; sourceTree = SOURCE_ROOT; };
 		EB87FDF31871DA8E0020F90C /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; name = www; path = ../../www; sourceTree = "<group>"; };
 		EB87FDF41871DAF40020F90C /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = ../../config.xml; sourceTree = "<group>"; };
-		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = __PROJECT_NAME__/config.xml; sourceTree = "<group>"; };
+		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = "__PROJECT_NAME__/config.xml"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,7 +116,7 @@
 				94DF25E41C0789E200AA4B62 /* __PROJECT_NAME__-Info.plist */,
 			);
 			name = Resources;
-			path = __PROJECT_NAME__/Resources;
+			path = "__PROJECT_NAME__/Resources";
 			sourceTree = "<group>";
 		};
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
@@ -141,7 +141,7 @@
 			children = (
 			);
 			name = Plugins;
-			path = __PROJECT_NAME__/Plugins;
+			path = "__PROJECT_NAME__/Plugins";
 			sourceTree = SOURCE_ROOT;
 		};
 		890B50741C505D7D00F0E3FF /* Framework Headers */ = {
@@ -243,8 +243,8 @@
 			dependencies = (
 				890B50C51C505EA600F0E3FF /* PBXTargetDependency */,
 			);
-			name = __PROJECT_NAME__;
-			productName = __PROJECT_NAME__;
+			name = "__PROJECT_NAME__";
+			productName = "__PROJECT_NAME__";
 			productReference = 94DF25DF1C0789E200AA4B62 /* __PROJECT_NAME__.framework */;
 			productType = "com.apple.product-type.framework";
 		};
@@ -433,7 +433,7 @@
 				INFOPLIST_FILE = "__PROJECT_NAME__/__PROJECT_NAME__-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = __PROJECT_NAME__;
+				PRODUCT_NAME = "__PROJECT_NAME__";
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -451,7 +451,7 @@
 				INFOPLIST_FILE = "__PROJECT_NAME__/__PROJECT_NAME__-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = __PROJECT_NAME__;
+				PRODUCT_NAME = "__PROJECT_NAME__";
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
