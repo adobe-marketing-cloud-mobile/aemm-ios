@@ -315,13 +315,19 @@
     }
 	
 	// /////////////////
-	
+	__weak __typeof__(self) weakSelf = self;
 	[CDVUserAgentUtil acquireLock:^(NSInteger lockToken) {
-		_userAgentLockToken = lockToken;
-		[CDVUserAgentUtil setUserAgent:self.userAgent lockToken:lockToken];
+		// Fix the memory leak caused by the strong reference.
+		[weakSelf setLockToken:lockToken];
 	}];
 }
 
+- (void)setLockToken:(NSInteger)lockToken
+{
+	_userAgentLockToken = lockToken;
+	[CDVUserAgentUtil setUserAgent:self.userAgent lockToken:lockToken];
+}
+  
 - (NSArray*)parseInterfaceOrientations:(NSArray*)orientations
 {
     NSMutableArray* result = [[NSMutableArray alloc] init];
